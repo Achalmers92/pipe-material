@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free tools for learning water, sewer, and storm pipe materials, ratings, and joint types — built for civil engineering project managers and coordinators.">
+<title>Pipe Reference Hub</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ink:#1b241f;
+  --ink-soft:#485950;
+  --paper:#eef1ec;
+  --paper-raised:#ffffff;
+  --line:#c7cdc4;
+  --line-soft:#dde1d9;
+  --accent-water:#2f6fed;
+  --accent-water-soft:#dfe8fd;
+  --accent-sewer:#3f7a4c;
+  --accent-sewer-soft:#dfeee2;
+  --accent-storm:#b8781e;
+  --accent-storm-soft:#f6e6ce;
+  --shadow: 0 1px 2px rgba(27,36,31,.06), 0 8px 24px -12px rgba(27,36,31,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9ede7; --ink-soft:#aeb9ae; --paper:#151c18; --paper-raised:#1d2620;
+    --line:#3a463d; --line-soft:#2a342d;
+    --accent-water:#7aa3ff; --accent-water-soft:#22314f;
+    --accent-sewer:#7fc190; --accent-sewer-soft:#1f3324;
+    --accent-storm:#e0a256; --accent-storm-soft:#3a2c17;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9ede7; --ink-soft:#aeb9ae; --paper:#151c18; --paper-raised:#1d2620;
+  --line:#3a463d; --line-soft:#2a342d;
+  --accent-water:#7aa3ff; --accent-water-soft:#22314f;
+  --accent-sewer:#7fc190; --accent-sewer-soft:#1f3324;
+  --accent-storm:#e0a256; --accent-storm-soft:#3a2c17;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 28px 28px;
+  min-height:100vh;
+}
+.wrap{ max-width:760px; margin:0 auto; padding: 48px 16px 64px; }
+h1,h2{font-family:'Big Shoulders Display',system-ui,sans-serif; text-wrap:balance; margin:0; letter-spacing:.01em;}
+a{color:inherit;}
+.eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft);}
+h1{font-size:clamp(30px,6vw,44px); font-weight:800; line-height:1.05; margin-top:6px;}
+.subtitle{color:var(--ink-soft); font-size:15px; max-width:52ch; margin-top:14px; line-height:1.55;}
+.cards{display:flex; flex-direction:column; gap:18px; margin-top:40px;}
+.card{
+  display:block; text-decoration:none; color:var(--ink);
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
+  box-shadow:var(--shadow); padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{transform:translateY(-2px);}
+.card:focus-visible{outline:2px solid var(--accent-water); outline-offset:3px;}
+.card-top{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+.card-icon{
+  width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:19px; flex-shrink:0;
+}
+.card-name{font-size:22px; font-weight:700;}
+.card-desc{color:var(--ink-soft); font-size:14px; line-height:1.5; margin-top:2px;}
+.card-cta{
+  margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.tags{display:flex; gap:14px; flex-wrap:wrap; margin-top:44px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);}
+.tags span{display:flex; align-items:center; gap:6px;}
+.tags .dot{width:8px; height:8px; border-radius:50%;}
+footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Water &middot; Sewer &middot; Storm</span>
+    <h1>Pipe Reference Hub</h1>
+    <p class="subtitle">Two free tools for learning what pipe materials are actually called, what they look like, and the facts that matter &mdash; built so a conversation with a contractor or client never trips up on a spec.</p>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="pipe-primer.html">
+      <div class="card-top">
+        <span class="card-icon" style="background:var(--accent-water-soft); color:var(--accent-water);">&#127183;</span>
+        <span class="card-name">Pipe Primer</span>
+      </div>
+      <p class="card-desc">Interactive flashcards and a quiz mode covering 22 materials, ratings, and joint types. Progress is saved in your browser as you go.</p>
+      <span class="card-cta" style="color:var(--accent-water);">Start studying &rarr;</span>
+    </a>
+
+    <a class="card" href="pipe-field-guide.html">
+      <div class="card-top">
+        <span class="card-icon" style="background:var(--accent-sewer-soft); color:var(--accent-sewer);">&#128269;</span>
+        <span class="card-name">Pipe Field Guide</span>
+      </div>
+      <p class="card-desc">A searchable, photo-illustrated reference sheet &mdash; standard, rating system, joint type, and where you'll see each material, for on-demand lookup.</p>
+      <span class="card-cta" style="color:var(--accent-sewer);">Open the guide &rarr;</span>
+    </a>
+  </div>
+
+  <div class="tags">
+    <span><span class="dot" style="background:var(--accent-water);"></span>Water</span>
+    <span><span class="dot" style="background:var(--accent-sewer);"></span>Sewer</span>
+    <span><span class="dot" style="background:var(--accent-storm);"></span>Storm</span>
+  </div>
+
+  <footer>
+    Built as a reference for civil engineering project managers and coordinators &mdash; free to use, no account required.
+  </footer>
+</div>
+</body>
+</html>

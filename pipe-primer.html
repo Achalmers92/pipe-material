@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interactive flashcards and quiz for learning water, sewer, and storm pipe materials, ratings, and joints.">
+<title>Pipe Primer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ink:#1b241f;
+  --ink-soft:#485950;
+  --paper:#eef1ec;
+  --paper-raised:#ffffff;
+  --line:#c7cdc4;
+  --line-soft:#dde1d9;
+  --accent-water:#2f6fed;
+  --accent-water-soft:#dfe8fd;
+  --accent-sewer:#3f7a4c;
+  --accent-sewer-soft:#dfeee2;
+  --accent-storm:#b8781e;
+  --accent-storm-soft:#f6e6ce;
+  --accent-system:#6b5b95;
+  --accent-system-soft:#e7e2f1;
+  --accent-mixup:#b8433a;
+  --accent-mixup-soft:#f6dfdc;
+  --good:#2f7a4a;
+  --bad:#b8433a;
+  --shadow: 0 1px 2px rgba(27,36,31,.06), 0 8px 24px -12px rgba(27,36,31,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9ede7;
+    --ink-soft:#aeb9ae;
+    --paper:#151c18;
+    --paper-raised:#1d2620;
+    --line:#3a463d;
+    --line-soft:#2a342d;
+    --accent-water:#7aa3ff;
+    --accent-water-soft:#22314f;
+    --accent-sewer:#7fc190;
+    --accent-sewer-soft:#1f3324;
+    --accent-storm:#e0a256;
+    --accent-storm-soft:#3a2c17;
+    --accent-system:#b6a4e8;
+    --accent-system-soft:#312a45;
+    --accent-mixup:#e28378;
+    --accent-mixup-soft:#3c211e;
+    --good:#7fc190;
+    --bad:#e28378;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9ede7;
+  --ink-soft:#aeb9ae;
+  --paper:#151c18;
+  --paper-raised:#1d2620;
+  --line:#3a463d;
+  --line-soft:#2a342d;
+  --accent-water:#7aa3ff;
+  --accent-water-soft:#22314f;
+  --accent-sewer:#7fc190;
+  --accent-sewer-soft:#1f3324;
+  --accent-storm:#e0a256;
+  --accent-storm-soft:#3a2c17;
+  --accent-system:#b6a4e8;
+  --accent-system-soft:#312a45;
+  --accent-mixup:#e28378;
+  --accent-mixup-soft:#3c211e;
+  --good:#7fc190;
+  --bad:#e28378;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+[hidden]{display:none!important;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.wrap{
+  max-width:920px;
+  margin:0 auto;
+  padding: 20px 16px 56px;
+}
+h1,h2,h3{font-family:'Big Shoulders Display',system-ui,sans-serif; text-wrap:balance; margin:0; letter-spacing:.01em;}
+.plate{
+  background:var(--paper-raised);
+  border:1px solid var(--line);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+}
+header.top{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+  flex-wrap:wrap;
+  padding-bottom:14px; margin-bottom:16px;
+  border-bottom:2px solid var(--ink);
+}
+.title-block{display:flex; flex-direction:column; gap:2px;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-soft);
+}
+h1{font-size:clamp(28px,5vw,40px); font-weight:800; line-height:1;}
+.subtitle{color:var(--ink-soft); font-size:14px; max-width:46ch;}
+.streak-box{
+  font-family:'IBM Plex Mono',monospace;
+  text-align:right; font-size:12px; color:var(--ink-soft);
+  display:flex; flex-direction:column; gap:2px; align-items:flex-end;
+}
+.streak-box b{font-family:'Big Shoulders Display',sans-serif; font-size:26px; color:var(--ink); font-weight:700; line-height:1;}
+
+nav.modes{display:flex; gap:8px; margin-bottom:14px;}
+.mode-btn{
+  font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:14px;
+  padding:9px 18px; border-radius:8px 8px 0 0; border:1px solid var(--line); border-bottom:none;
+  background:var(--paper); color:var(--ink-soft); cursor:pointer;
+}
+.mode-btn[aria-selected="true"]{ background:var(--paper-raised); color:var(--ink); box-shadow: 0 -2px 0 var(--ink) inset; }
+.mode-btn:focus-visible{outline:2px solid var(--accent-water); outline-offset:2px;}
+
+.filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+.chip{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.02em;
+  padding:6px 12px; border-radius:999px; border:1px solid var(--line);
+  background:var(--paper-raised); color:var(--ink-soft); cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+}
+.chip .dot{width:8px; height:8px; border-radius:50%; background:var(--ink-soft);}
+.chip[aria-pressed="true"]{ color:var(--ink); border-color:currentColor; font-weight:600; }
+.chip:focus-visible{outline:2px solid var(--accent-water); outline-offset:2px;}
+
+.progress-row{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+.progress-track{flex:1; height:8px; border-radius:99px; background:var(--line-soft); overflow:hidden;}
+.progress-fill{height:100%; background:var(--good); border-radius:99px; transition:width .3s ease;}
+.progress-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); white-space:nowrap;}
+
+/* STUDY VIEW */
+#study-view{display:flex; flex-direction:column; align-items:center; gap:18px;}
+.stage{width:100%; max-width:480px; perspective:1600px;}
+.card{
+  position:relative; width:100%; min-height:400px;
+  cursor:pointer;
+}
+.card-inner{
+  position:relative; width:100%; height:100%; min-height:400px;
+  transition:transform .5s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.card.flipped .card-inner{transform:rotateY(180deg);}
+.face{
+  position:absolute; inset:0; backface-visibility:hidden;
+  border-radius:14px; border:1px solid var(--line); background:var(--paper-raised);
+  box-shadow:var(--shadow);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.face.back{transform:rotateY(180deg); overflow-y:auto;}
+.face-top{
+  padding:14px 18px; display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid var(--line-soft);
+}
+.cat-tag{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em;
+  padding:3px 9px; border-radius:5px; font-weight:600;
+}
+.card-icon-wrap{flex:1; display:flex; align-items:center; justify-content:center; padding:12px;}
+.face-front .name{
+  text-align:center; font-size:clamp(24px,6vw,32px); font-weight:800; padding:0 18px 6px;
+}
+.face-front .aka{text-align:center; color:var(--ink-soft); font-size:13px; padding-bottom:16px;}
+.tap-hint{
+  text-align:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);
+  padding:10px; border-top:1px dashed var(--line);
+}
+.spec-plate{padding:16px 18px 18px; display:flex; flex-direction:column; gap:12px;}
+.spec-row{display:flex; flex-direction:column; gap:2px;}
+.spec-row .k{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+.spec-row .v{font-size:14px; line-height:1.45;}
+.tip-box{
+  background:var(--accent-system-soft); border:1px dashed var(--accent-system); border-radius:8px;
+  padding:10px 12px; font-size:13px; line-height:1.5;
+}
+.tip-box b{color:var(--accent-system);}
+
+.study-controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+.btn{
+  font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:14px;
+  padding:10px 18px; border-radius:8px; border:1px solid var(--line);
+  background:var(--paper-raised); color:var(--ink); cursor:pointer;
+}
+.btn:focus-visible{outline:2px solid var(--accent-water); outline-offset:2px;}
+.btn.ghost{background:transparent;}
+.btn.learning{border-color:var(--accent-storm); color:var(--accent-storm);}
+.btn.known{border-color:var(--good); color:var(--good);}
+.btn.primary{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+.nav-row{display:flex; align-items:center; gap:14px;}
+.nav-row .idx{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); min-width:64px; text-align:center;}
+
+/* QUIZ VIEW */
+#quiz-view{display:flex; flex-direction:column; gap:16px; align-items:center;}
+.quiz-card{width:100%; max-width:560px; padding:22px 22px 20px;}
+.quiz-cat{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:600; margin-bottom:10px; display:inline-block; padding:3px 9px; border-radius:5px;}
+.quiz-q{font-size:19px; font-weight:600; line-height:1.4; margin-bottom:18px;}
+.choices{display:flex; flex-direction:column; gap:9px;}
+.choice{
+  text-align:left; font-family:'IBM Plex Sans',sans-serif; font-size:14.5px; line-height:1.4;
+  padding:11px 14px; border-radius:8px; border:1px solid var(--line); background:var(--paper);
+  cursor:pointer; display:flex; gap:10px; align-items:flex-start;
+}
+.choice .letter{font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--ink-soft); flex-shrink:0;}
+.choice:hover{border-color:var(--ink-soft);}
+.choice:focus-visible{outline:2px solid var(--accent-water); outline-offset:2px;}
+.choice.correct{border-color:var(--good); background:color-mix(in srgb, var(--good) 12%, var(--paper));}
+.choice.wrong{border-color:var(--bad); background:color-mix(in srgb, var(--bad) 12%, var(--paper));}
+.choice[disabled]{cursor:default;}
+.explain{
+  margin-top:16px; padding:12px 14px; border-radius:8px; font-size:13.5px; line-height:1.55;
+  background:var(--paper); border:1px solid var(--line-soft); display:none;
+}
+.explain.show{display:block;}
+.quiz-footer{display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:10px; flex-wrap:wrap;}
+.score-mini{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);}
+.empty-state{max-width:480px; text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:14px;}
+.empty-state h3{color:var(--ink); margin-bottom:10px;}
+
+footer.legend{
+  margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+  display:flex; gap:16px; flex-wrap:wrap; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);
+}
+footer.legend span{display:flex; align-items:center; gap:6px;}
+footer.legend .dot{width:9px; height:9px; border-radius:2px;}
+.save-note{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:10px;}
+
+@media (max-width:520px){
+  header.top{flex-direction:column; align-items:flex-start;}
+  .streak-box{align-items:flex-start; text-align:left;}
+  .card, .card-inner{min-height:460px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .card-inner{transition:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <span class="eyebrow">Water &middot; Sewer &middot; Storm &mdash; Field Reference</span>
+      <h1>Pipe Primer</h1>
+      <p class="subtitle">Learn to identify pipe materials, ratings, and joints so a call with a contractor or client never trips you up.</p>
+    </div>
+    <div class="streak-box">
+      <b id="known-count">0/0</b>
+      <span>cards mastered</span>
+    </div>
+  </header>
+
+  <nav class="modes" role="tablist" aria-label="Mode">
+    <button class="mode-btn" id="tab-study" role="tab" aria-selected="true">Study</button>
+    <button class="mode-btn" id="tab-quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <span class="progress-label" id="progress-label">0% mastered</span>
+  </div>
+
+  <main id="study-view">
+    <div class="stage">
+      <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard, press to flip">
+        <div class="card-inner">
+          <div class="face face-front" id="face-front"></div>
+          <div class="face back" id="face-back"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn ghost" id="prev-btn" aria-label="Previous card">&larr; Prev</button>
+      <span class="idx" id="card-idx">1 / 1</span>
+      <button class="btn ghost" id="next-btn" aria-label="Next card">Next &rarr;</button>
+    </div>
+    <div class="study-controls">
+      <button class="btn learning" id="mark-learning">Still learning</button>
+      <button class="btn known" id="mark-known">Got it</button>
+      <button class="btn primary" id="shuffle-btn">Shuffle deck</button>
+    </div>
+  </main>
+
+  <main id="quiz-view" hidden></main>
+
+  <footer class="legend" id="legend"></footer>
+  <p class="save-note" id="save-note"></p>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var CATS = [
+  {id:'water', label:'Water', color:'var(--accent-water)', soft:'var(--accent-water-soft)'},
+  {id:'sewer', label:'Sewer', color:'var(--accent-sewer)', soft:'var(--accent-sewer-soft)'},
+  {id:'storm', label:'Storm', color:'var(--accent-storm)', soft:'var(--accent-storm-soft)'},
+  {id:'system', label:'Ratings & Joints', color:'var(--accent-system)', soft:'var(--accent-system-soft)'},
+  {id:'mixup', label:'Common Mix-Ups', color:'var(--accent-mixup)', soft:'var(--accent-mixup-soft)'}
+];
+function catOf(id){ return CATS.filter(function(c){return c.id===id;})[0]; }
+
+function icon(opts){
+  var wall=opts.wall, bore=opts.bore, stripe=opts.stripe, dashed=opts.dashed, dots=opts.dots;
+  var s = '<svg viewBox="0 0 100 100" width="86" height="86" aria-hidden="true">';
+  s += '<circle cx="50" cy="50" r="43" fill="'+wall+'" stroke="rgba(0,0,0,.18)" stroke-width="'+(dashed?4:1)+'" '+(dashed?'stroke-dasharray="5 4"':'')+' />';
+  if(dots){
+    var pts=[[30,28],[68,30],[24,62],[58,70],[74,54],[42,20],[50,80]];
+    for(var i=0;i<pts.length;i++){ s+='<circle cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="2.4" fill="rgba(0,0,0,.22)"/>'; }
+  }
+  s += '<circle cx="50" cy="50" r="26" fill="'+bore+'" />';
+  if(stripe){ s += '<path d="M 13 34 A 43 43 0 0 1 87 34" stroke="'+stripe+'" stroke-width="8" fill="none" stroke-linecap="round"/>'; }
+  s += '</svg>';
+  return s;
+}
+var ICONS = {
+  dip:      icon({wall:'#2b2b2b', bore:'#0e0e0e'}),
+  pvcBlue:  icon({wall:'#4a78c9', bore:'#e9eff9'}),
+  fpvc:     icon({wall:'#4a78c9', bore:'#e9eff9', stripe:'#dfe8fd'}),
+  hdpeW:    icon({wall:'#141414', bore:'#0a0a0a', stripe:'#2f6fed'}),
+  copper:   icon({wall:'#b5652c', bore:'#e8b98a'}),
+  pvcGreen: icon({wall:'#3f7a4c', bore:'#e2f0e5'}),
+  vcp:      icon({wall:'#9c5a3c', bore:'#5a2f1e'}),
+  hdpeS:    icon({wall:'#141414', bore:'#0a0a0a', stripe:'#3f7a4c'}),
+  rcp:      icon({wall:'#9a9a92', bore:'#4a4a44', dots:true}),
+  hdpeCorr: icon({wall:'#1c1c1c', bore:'#d8d8d0', dashed:true}),
+  ppCorr:   icon({wall:'#245c46', bore:'#d8d8d0', dashed:true}),
+  cmp:      icon({wall:'#a7a9ab', bore:'#6b6d6f', dashed:true}),
+  pvcStorm: icon({wall:'#c9c2a6', bore:'#efece0'}),
+  ring:     icon({wall:'#6b5b95', bore:'#e7e2f1'}),
+  warn:     icon({wall:'#b8433a', bore:'#f6dfdc'})
+};
+
+/* ---------------- CARD DATA ---------------- */
+var CARDS = [
+{id:'dip', cat:'water', name:'Ductile Iron Pipe', aka:'DIP', icon:ICONS.dip,
+  std:'AWWA C151 (pipe) / C150 (thickness design) / C104 (cement-mortar lining) / C105 (polyethylene encasement)',
+  rate:'Pressure Class (e.g. "Class 350") — never a DR number',
+  joint:'Push-on gasketed bell (e.g. Tyton), mechanical joint (MJ) with bolted gland on fittings, restrained joint on thrust points',
+  look:'Heavy, rigid black/grey pipe, often wrapped in a black poly sleeve when buried. Thick bell end with a visible rubber gasket. Rings like metal when struck.',
+  use:'Water mains under roads, at fittings/hydrants/valves, and force mains — wherever strength and restraint matter most.',
+  tip:'If someone says "Class 350," they mean DIP. DIP is sized/rated by <b>Class</b>, not DR — that’s the single fact that avoids most DIP mix-ups.',
+  q:'A contractor says the water main is "Class 350." What material and rating system are they describing?',
+  choices:['Ductile iron pipe, rated by Pressure Class','PVC C900, rated by DR','HDPE, rated by SDR','RCP, rated by concrete Class'],
+  correct:0,
+  explain:'"Class" (350, 250, etc.) is the ductile iron rating system — a working-pressure rating tied to wall thickness per AWWA C150/C151. DIP is never given a DR number.'},
+
+{id:'pvcw', cat:'water', name:'PVC C900 / C905', aka:'Gasketed pressure PVC', icon:ICONS.pvcBlue,
+  std:'AWWA C900 (4–12") / C905 (14"+) — outside diameter matches cast/ductile iron pipe so it interchanges with DIP fittings',
+  rate:'DR (Dimension Ratio) — common DR14, DR18, DR25. Lower DR = thicker wall = higher pressure rating.',
+  joint:'Gasketed bell & spigot (integral bell, push-on) — no glue, no fusion',
+  look:'Lightweight blue (or white/cream) plastic pipe with a wide bell end and a visible rubber gasket ring inside it.',
+  use:'The default material for new municipal water mains where trenchless installation isn’t needed.',
+  tip:'Blue color is a convention, not a guarantee — always confirm the stripe/stamp on the pipe wall.',
+  q:'What sizing system does PVC C900 water pipe use, and what does a lower number mean?',
+  choices:['DR — a lower number means a thicker wall and higher pressure rating','Schedule — a lower number means a thinner wall','Class — a lower number means a weaker pipe','PSI — the number is stamped working pressure directly'],
+  correct:0,
+  explain:'DR = outside diameter ÷ minimum wall thickness. A DR14 pipe has a thicker wall relative to its diameter than a DR25 pipe of the same size, so it holds more pressure.'},
+
+{id:'fpvc', cat:'water', name:'Fusible PVC', aka:'FPVC — same resin as C900/C905, different ends', icon:ICONS.fpvc,
+  std:'Manufactured to AWWA C900/C905 pressure specs; joints tested per ASTM F1674',
+  rate:'DR — DIPS sizes: DR14, 18, 21, 25, 32.5. IPS sizes: DR17, 21, 26. (No DR11 offering — DR14 is its highest-pressure option.)',
+  joint:'Thermal butt fusion (heated plates fuse two plain ends into one) — gasketless, fully restrained, no thrust blocks needed',
+  look:'Straight plain-end lengths of blue/white PVC pipe — no bell ends. A small fused "bead" ring marks each joint, just like HDPE.',
+  use:'Directional drilling, slip-lining, and anywhere a leak-free restrained joint is wanted without gaskets or thrust restraint.',
+  tip:'FPVC is a <b>material</b> (fusible-jointed PVC), not a rating. It always ships with its own DR number — "FPVC" alone never tells you the wall thickness.',
+  q:'Someone tells you "he used FPVC instead of DR11." Why does that sentence not quite make sense?',
+  choices:['FPVC is a material/joint type; DR11 is a wall-thickness rating — they’re not alternatives to each other','FPVC only comes in DR11, so the statement is redundant','DR11 pipe cannot be fused, so this is physically impossible','There is no such thing as FPVC'],
+  correct:0,
+  explain:'FPVC describes the material and its fused joint. DR11 describes wall thickness — a spec any thermoplastic pipe (including FPVC) carries. The useful version of that sentence names both: e.g. "he used FPVC DR18 instead of the HDPE DR11 called out on the plans."'},
+
+{id:'hdpew', cat:'water', name:'HDPE (water)', aka:'High-Density Polyethylene', icon:ICONS.hdpeW,
+  std:'AWWA C906',
+  rate:'DR / SDR — DR11 (≈200 psi) is the most common water rating; DR9, DR13.5, DR17 also used',
+  joint:'Thermal butt fusion (fusion machine + heat plates); electrofusion fittings for tie-ins',
+  look:'Solid black pipe, sometimes with co-extruded blue stripes for water service. No bells — continuous fused runs, sold in coils (small dia.) or straight sticks (large dia.).',
+  use:'Directional drills, wetland/road crossings, anywhere flexibility and a fully-restrained fused joint beat a gasketed one.',
+  tip:'"DR11" said on its own, with no material named, is field shorthand people usually mean as HDPE — but always confirm, since PVC and FPVC carry DR numbers too.',
+  q:'What does the black pipe with blue stripes, joined without any bells or gaskets, most likely tell you?',
+  choices:['HDPE water pipe, joined by butt fusion','PVC C900 water pipe, joined by gaskets','Ductile iron pipe, joined by mechanical joint','RCP storm pipe, joined by mortar'],
+  correct:0,
+  explain:'HDPE water pipe is black (sometimes blue-striped), plain-ended, and fused — no bells or gaskets exist on true HDPE runs.'},
+
+{id:'copper', cat:'water', name:'Copper', aka:'Type K / L / M', icon:ICONS.copper,
+  std:'ASTM B88 — Type K (thickest), L, M (thinnest) wall',
+  rate:'Wall "Type," not DR or Class',
+  joint:'Soldered/sweated, compression fittings, or push-fit',
+  look:'Distinctive copper-orange/brown metal. Soft-temper coil for small diameter, rigid straight lengths for larger.',
+  use:'Water services — the small-diameter run from the main to the meter or building. Not used for mains.',
+  tip:'If it’s copper, you’re almost certainly looking at a service line, not a main.',
+  q:'Where would you expect to actually see copper pipe on a water project?',
+  choices:['The service line from the main to the meter/building','The water main itself','A storm drain culvert','A gravity sewer lateral'],
+  correct:0,
+  explain:'Copper is a small-diameter service-line material. Mains are DIP, PVC C900/905, FPVC, or HDPE.'},
+
+{id:'pvcs', cat:'sewer', name:'PVC SDR35 / SDR26', aka:'Gravity sewer PVC', icon:ICONS.pvcGreen,
+  std:'ASTM D3034 (SDR35, 4–15") / ASTM F679 (SDR26 and larger, deeper burial)',
+  rate:'SDR — SDR35 is standard depth; SDR26 has a thicker wall for deeper burial or higher loads',
+  joint:'Gasketed bell & spigot, integral bell, push-on',
+  look:'GREEN pipe by convention. Bell end with a visible gasket, lightweight.',
+  use:'The default material for new gravity sanitary sewer mains and laterals today.',
+  tip:'Green ≠ proof of sewer — it’s a paint/dye convention. Confirm the stamp: material, standard, and SDR are printed right on the pipe wall.',
+  q:'A contractor needs a thicker-walled gravity sewer pipe for a deep trench. Which spec do they reach for?',
+  choices:['SDR26 instead of SDR35','DR11 instead of DR18','Class IV instead of Class III','Schedule 80 instead of Schedule 40'],
+  correct:0,
+  explain:'Within PVC gravity sewer pipe, SDR26 has a thicker wall than SDR35 (lower SDR number = thicker wall, same as any DR system) and is used for deeper burial or heavier loads.'},
+
+{id:'vcp', cat:'sewer', name:'Vitrified Clay Pipe', aka:'VCP — legacy sewer material', icon:ICONS.vcp,
+  std:'ASTM C700',
+  rate:'"Extra Strength" (ES) classification — not DR-based',
+  joint:'Compression band/gasket couplings on newer clay; mortar on very old installations',
+  look:'Reddish-brown/tan glazed ceramic. Hard, brittle, heavy — rings when tapped, unlike plastic.',
+  use:'Older sewer systems (pre-1970s–80s). Rarely specified new, but common on tie-ins, rehab, and repair of existing systems in older parts of a service area.',
+  tip:'If you see ceramic-looking reddish pipe on an as-built or during a tie-in, assume it predates the current PVC standard.',
+  q:'You’re reviewing an as-built for a tie-in on an older sewer line and see reddish-brown glazed ceramic pipe. What is it, and should you expect a modern SDR rating on it?',
+  choices:['Vitrified clay pipe — rated Extra Strength, not by SDR','PVC SDR35 — just discolored with age','RCP — painted to match the sewer color code','FPVC — an early clay-look product line'],
+  correct:0,
+  explain:'VCP is fired ceramic pipe rated by "Extra Strength" classification per ASTM C700, common in systems built before PVC became standard. It never carries an SDR number.'},
+
+{id:'diplsewer', cat:'sewer', name:'Ductile Iron (force main)', aka:'DIP, sewer service', icon:ICONS.dip,
+  std:'Same AWWA C150/C151 base as water DIP, often with a special interior lining (e.g. ceramic epoxy) for H₂S/corrosion resistance',
+  rate:'Pressure Class',
+  joint:'Push-on, mechanical joint, or restrained joint',
+  look:'Identical to water DIP; may be marked or lined for sewer service. Common at pump station discharges and road bores.',
+  use:'Force mains discharging from lift/pump stations, and sewer road crossings where extra strength or restraint is needed.',
+  tip:'Same material, same rating system as water DIP — the giveaway that it’s sewer service is context (pump station discharge) not the pipe itself.',
+  q:'What rating system applies to a ductile iron sewer force main?',
+  choices:['Pressure Class — same system as water DIP','SDR — same system as PVC gravity sewer','Extra Strength — same system as VCP','Pipe stiffness class — same system as corrugated HDPE'],
+  correct:0,
+  explain:'DIP is DIP — whether it’s carrying water or wastewater, it’s rated by Pressure Class (AWWA C150/C151), never DR or SDR.'},
+
+{id:'hdpesewer', cat:'sewer', name:'HDPE (force main)', aka:'Fused sewer/force main HDPE', icon:ICONS.hdpeS,
+  std:'AWWA C906 (pressure) / ASTM F714',
+  rate:'DR / SDR, same system as HDPE water pipe',
+  joint:'Thermal butt fusion',
+  look:'Black pipe, plain ends, fused joints — identical construction to water HDPE, just in a wastewater application.',
+  use:'Lift station force mains and directional drills under wetlands/roads — very common on coastal Georgia marsh crossings.',
+  tip:'The fusion process is what actually makes HDPE popular for marsh/wetland crossings: no joints to leak or separate under settlement.',
+  q:'Why is HDPE force main a common choice for a sewer crossing under a coastal marsh?',
+  choices:['Fully fused, gasketless joints resist leaking or separating under settlement','It’s the only material rated for saltwater contact','It uses solvent-welded joints, which are cheaper','It is rated by Pressure Class, like ductile iron'],
+  correct:0,
+  explain:'Butt-fused HDPE joints are as strong as the pipe itself and don’t rely on a gasket seal — valuable where soft soils can shift and stress a joint.'},
+
+{id:'rcp', cat:'storm', name:'Reinforced Concrete Pipe', aka:'RCP', icon:ICONS.rcp,
+  std:'ASTM C76',
+  rate:'Class I–V, based on D-load strength from a three-edge bearing test — not DR-based',
+  joint:'Bell & spigot with a rubber gasket (older pipe may use mortar/mastic joints)',
+  look:'Heavy grey concrete, very rigid. Bell end. If cut or broken, a rebar cage is visible inside the wall.',
+  use:'Storm drain mains and culverts, especially larger diameters or where heavy cover/traffic loading is expected.',
+  tip:'Concrete pipe is <b>never</b> rated in DR — if a rating conversation involves RCP, the term you want is "Class."',
+  q:'What rating system does reinforced concrete storm pipe use?',
+  choices:['Class (I–V), based on D-load strength','DR, based on OD-to-wall-thickness ratio','Pressure Class, based on psi','Schedule, based on nominal wall size'],
+  correct:0,
+  explain:'RCP strength is expressed as a Class (I through V) from a three-edge bearing test per ASTM C76 — a completely different system from the DR/SDR used on plastic pipe.'},
+
+{id:'hdpecorr', cat:'storm', name:'Corrugated HDPE (dual-wall)', aka:'e.g. ADS N-12', icon:ICONS.hdpeCorr,
+  std:'AASHTO M294 / ASTM F2306',
+  rate:'Pipe stiffness class / AASHTO load rating — not DR-based',
+  joint:'Gasketed bell & spigot, or split couplers/bands on smaller sizes',
+  look:'Corrugated (ribbed, "accordion") black exterior for strength, smooth interior for flow. Lightweight and flexible.',
+  use:'Now the dominant material for most storm drain runs, culverts, and detention/retention piping — largely displacing RCP on cost and weight.',
+  tip:'"Dual-wall" refers to the smooth bore inside a corrugated shell — that’s what gives it near-RCP hydraulic performance at a fraction of the weight.',
+  q:'What does the ribbed black exterior with a smooth interior on a storm pipe tell you?',
+  choices:['Corrugated dual-wall HDPE (or PP) storm pipe','Corrugated metal pipe (CMP)','Ductile iron force main','PVC SDR35 gravity sewer'],
+  correct:0,
+  explain:'The corrugated exterior gives strength and stiffness; the smooth interior wall keeps hydraulic flow efficient. Solid metal ribbing (not plastic) would instead signal CMP.'},
+
+{id:'ppcorr', cat:'storm', name:'Corrugated Polypropylene', aka:'e.g. ADS HP Storm', icon:ICONS.ppCorr,
+  std:'ASTM F2736 / F2881, AASHTO M330',
+  rate:'Pipe stiffness class, like corrugated HDPE — PP is inherently stiffer, so it’s favored for larger diameters/heavier loads',
+  joint:'Gasketed bell & spigot, same as corrugated HDPE',
+  look:'Nearly identical to corrugated HDPE — ribbed exterior, smooth bore — sometimes with a green-tinted resin instead of solid black.',
+  use:'Larger-diameter storm mains and heavier-load applications where extra stiffness beats standard corrugated HDPE.',
+  tip:'Don’t assume ribbed plastic pipe is automatically HDPE — ask which resin, since PP and HDPE corrugated pipe compete head-to-head on larger storm jobs.',
+  q:'A contractor mentions "HP storm pipe" on a larger-diameter storm run. What are they most likely referring to?',
+  choices:['A stiffer, polypropylene version of corrugated dual-wall pipe','A high-pressure ductile iron pipe','A concrete pipe rated Class V','A brand of vitrified clay pipe'],
+  correct:0,
+  explain:'"HP" storm pipe (e.g. ADS HP) is corrugated polypropylene — built like corrugated HDPE but stiffer, often chosen for larger diameters or heavier cover.'},
+
+{id:'cmp', cat:'storm', name:'Corrugated Metal Pipe', aka:'CMP', icon:ICONS.cmp,
+  std:'AASHTO M36 / ASTM A760 — galvanized or aluminized steel, sometimes aluminum',
+  rate:'Metal gauge (thickness), not DR or Class',
+  joint:'Banded couplers clamped around adjoining ends',
+  look:'Shiny-to-dull ribbed metal; rusts to orange-brown streaks with age. Distinct "corrugated tin" appearance.',
+  use:'Older culverts and driveway crossings. Largely being phased out/replaced due to corrosion, though still seen on legacy sites and some ag/temporary uses.',
+  tip:'Rust streaking down a culvert headwall is the fastest way to spot CMP from the road.',
+  q:'You see a culvert with visibly rusting, ribbed metal pipe. What material and rating system is that?',
+  choices:['Corrugated metal pipe, rated by metal gauge','Corrugated HDPE, rated by pipe stiffness class','RCP, rated by concrete Class','FPVC, rated by DR'],
+  correct:0,
+  explain:'CMP is corrugated galvanized or aluminized steel (occasionally aluminum), and it’s the one common pipe material that actually rusts — rated by metal gauge, not DR or Class.'},
+
+{id:'dr', cat:'system', name:'DR / SDR', aka:'Dimension Ratio / Standard Dimension Ratio', icon:ICONS.ring,
+  std:'Applies to thermoplastic pipe: PVC, FPVC, HDPE — never concrete, never ductile iron',
+  rate:'DR = pipe outside diameter ÷ minimum wall thickness. "SDR" is a DR value standardized to a round number — in the field the two terms are used almost interchangeably.',
+  joint:'—',
+  look:'Stamped right on the pipe wall along with the material and standard.',
+  use:'The universal sizing language for plastic pipe — but it always needs a material named alongside it to mean anything.',
+  tip:'Lower DR number = thicker wall relative to diameter = higher pressure rating. DR11 is thicker (and stronger) than DR26 in the same nominal size.',
+  q:'Between DR11 and DR26 pipe of the same nominal diameter, which has the thicker wall and higher pressure rating?',
+  choices:['DR11 — lower DR number means thicker wall','DR26 — higher DR number means thicker wall','They’re identical; DR doesn’t affect wall thickness','It depends only on the material, not the DR number'],
+  correct:0,
+  explain:'DR is outside diameter divided by minimum wall thickness. A smaller DR number means a proportionally thicker wall — and a higher pressure rating — for the same nominal pipe size.'},
+
+{id:'pclass', cat:'system', name:'Pressure Class', aka:'Ductile iron’s rating system', icon:ICONS.ring,
+  std:'AWWA C150 (thickness design) / C151 (manufacture)',
+  rate:'Expressed as "Class 350," "Class 250," etc. — a working-pressure rating tied to wall thickness',
+  joint:'—',
+  look:'Cast into or stamped on the pipe barrel.',
+  use:'The rating system for ductile iron pipe, exclusively.',
+  tip:'Hearing "Class" + a 3-digit number almost always means ductile iron — it’s a different system from DR entirely, not a different number range within the same system.',
+  q:'"Class" and "DR" are both pipe rating systems. Can the same physical pipe be described by both?',
+  choices:['No — Class rates ductile iron, DR rates thermoplastic pipe; they’re different systems for different materials','Yes — Class and DR are two names for the same number','Yes — higher-end PVC pipe uses Class instead of DR','No — DR is for metal pipe and Class is for plastic pipe'],
+  correct:0,
+  explain:'Class (AWWA C150/C151) is how ductile iron is rated. DR is how thermoplastic pipe (PVC, FPVC, HDPE) is rated. A single pipe gets one system or the other, never both — which is exactly why "Class III instead of DR26" doesn’t parse, same as the FPVC/DR11 mix-up.'},
+
+{id:'cclass', cat:'system', name:'Concrete Pipe Class', aka:'RCP’s rating system', icon:ICONS.ring,
+  std:'ASTM C76, three-edge bearing test',
+  rate:'Class I (weakest) through Class V (strongest), based on D-load — pounds per linear foot per foot of diameter the pipe resists before cracking',
+  joint:'—',
+  look:'Stamped or stenciled on the pipe.',
+  use:'The rating system for reinforced concrete pipe, exclusively — chosen based on burial depth and loading.',
+  tip:'Deeper burial or heavier traffic loading pushes the spec toward a higher Class number, same logic as choosing a lower DR for higher pressure in plastic pipe.',
+  q:'Why might an engineer spec Class IV RCP instead of Class III for the same storm line?',
+  choices:['Deeper burial or heavier surface loading requires more D-load strength','Class IV pipe has a smaller diameter','Class IV is a plastic-lined version of Class III','Class refers to the joint type, not the strength'],
+  correct:0,
+  explain:'RCP Class is a strength rating from a three-edge bearing test — a higher Class number resists more load, which is what deeper cover or heavier traffic demands.'},
+
+{id:'sched', cat:'system', name:'Schedule', aka:'Sch 40 / Sch 80', icon:ICONS.ring,
+  std:'Legacy system, mostly seen on smaller-diameter PVC (plumbing, conduit, small storm laterals)',
+  rate:'Wall thickness does not scale with diameter the same way DR does — Sch 80 is thicker-walled than Sch 40 at a given size, but the math behind the numbers is different from DR',
+  joint:'Usually solvent-welded (glued), not gasketed or fused',
+  look:'Plain-end pipe with a solvent-cemented joint — common on smaller, low-pressure runs, not on C900 or SDR35 mains.',
+  use:'Plumbing, conduit, and small non-pressure or low-pressure drainage lines. Rarely the spec on a municipal water or sewer main.',
+  tip:'If someone mentions solvent-welded (glued) joints, you’re almost certainly talking about Schedule pipe, not C900 or SDR-rated gasketed/fused pipe.',
+  q:'A small underdrain lateral uses glued (solvent-welded) plain-end PVC joints. What rating system is that pipe most likely using?',
+  choices:['Schedule (e.g. Sch 40) — common on smaller, glued, low-pressure runs','DR — the same system as C900 water main','Class — the same system as ductile iron','Pipe stiffness class — the same system as corrugated HDPE'],
+  correct:0,
+  explain:'Solvent-welded plain-end joints are the signature of Schedule-rated PVC, typically on smaller, lower-pressure lines — not the gasketed DR-rated pipe used on mains.'},
+
+{id:'joints', cat:'system', name:'Joint Types', aka:'How pipe sections actually connect', icon:ICONS.ring,
+  std:'—',
+  rate:'—',
+  joint:'Gasketed bell & spigot (DIP, PVC C900, RCP, corrugated pipe) · Mechanical joint/MJ (bolted gland, DIP fittings) · Restrained joint (any joint with a locking mechanism to resist pull-apart) · Thermal butt fusion (HDPE, FPVC — gasketless) · Solvent weld/glued (Schedule PVC) · Banded/coupled (corrugated HDPE/PP, CMP)',
+  look:'The joint style alone doesn’t identify the material — several very different pipes share "gasketed bell & spigot."',
+  use:'Knowing the joint type narrows the field but doesn’t finish the ID — pair it with color, rigidity, and any stamped marking.',
+  tip:'"Bell and spigot" is a joint description shared by DIP, PVC, and RCP — hearing it alone doesn’t tell you the material.',
+  q:'A contractor says the pipe has "a gasketed bell and spigot joint." Does that alone tell you the material?',
+  choices:['No — DIP, PVC C900, and RCP all commonly use gasketed bell & spigot joints','Yes — only PVC uses gasketed bell and spigot joints','Yes — only ductile iron uses bell and spigot joints','No — that joint type is exclusive to storm pipe'],
+  correct:0,
+  explain:'Gasketed bell & spigot is a joint style, not a material fingerprint — ductile iron, PVC, and concrete pipe all commonly use it. You need another clue (weight, color, rigidity, a stamp) to pin down the material.'},
+
+{id:'mix1', cat:'mixup', name:'"FPVC instead of DR11"', aka:'Material vs. rating — the classic mix-up', icon:ICONS.warn,
+  std:'—',
+  rate:'—',
+  joint:'—',
+  look:'A sentence that compares a material name to a rating number as if they were two options on the same menu.',
+  use:'This exact phrase is why this deck exists.',
+  tip:'The fix: always name material <em>and</em> rating on both sides. "FPVC DR18 instead of HDPE DR11" is a sentence that actually says something.',
+  q:'What’s the cleanest way to fix "he used FPVC instead of DR11"?',
+  choices:['Name the material AND the rating on both sides, e.g. "FPVC DR18 instead of HDPE DR11"','Drop the word DR entirely and just say "11"','Replace FPVC with "Class 11"','The original sentence is already correct as written'],
+  correct:0,
+  explain:'The original sentence conflates a material (FPVC) with a rating (DR11). Stating both attributes on both sides of the comparison removes the ambiguity and the category error.'},
+
+{id:'mix2', cat:'mixup', name:'"Class III instead of DR26"', aka:'The same mistake, concrete edition', icon:ICONS.warn,
+  std:'—',
+  rate:'—',
+  joint:'—',
+  look:'Same category error as the FPVC/DR11 mix-up, just with concrete pipe instead of plastic.',
+  use:'A pipe is rated by exactly one system: Class for concrete, DR for thermoplastic, Pressure Class for ductile iron. Never two.',
+  tip:'If a sentence pairs "Class" with "DR" as if choosing between them, one of those two terms is describing the wrong material entirely.',
+  q:'Someone says "he poured Class III instead of DR26." What’s wrong with that sentence?',
+  choices:['Class rates concrete pipe and DR rates plastic pipe — a single pipe can’t be rated by both systems','Nothing — Class and DR are interchangeable terms','DR26 is stronger than Class III, so this is a downgrade, not an error','Class III pipe cannot be poured, only precast'],
+  correct:0,
+  explain:'Class (concrete, ASTM C76) and DR (thermoplastic) are two entirely separate rating systems tied to two different materials. A single pipe is rated by one or the other, never both — the same category error as FPVC vs. DR11.'},
+
+{id:'mix3', cat:'mixup', name:'Color Isn’t Proof', aka:'Blue and green are conventions, not guarantees', icon:ICONS.warn,
+  std:'—',
+  rate:'—',
+  joint:'—',
+  look:'Blue = water, green = sewer is a strong convention — but paint and dye are choices, not chemistry.',
+  use:'HDPE water pipe is black with a blue stripe, not solid blue. Some jurisdictions and older installs don’t follow the convention at all.',
+  tip:'Confirm material from the stamp printed on the pipe wall (material, standard, size, DR/Class) — treat color as a hint, not a verdict.',
+  q:'Why shouldn’t you rely on pipe color alone to confirm what material is in the ground?',
+  choices:['Color is a paint/dye convention, not a guaranteed material indicator — confirm with the stamp on the pipe','All pipe is required by code to be the same color regardless of material','Color fades underground within a year, so it’s never reliable','Only storm pipe is color-coded; water and sewer are not'],
+  correct:0,
+  explain:'Blue-for-water and green-for-sewer are strong industry conventions, but they’re conventions — the reliable identifier is the stamp on the pipe wall showing material, standard, size, and rating.'},
+
+{id:'mix4', cat:'mixup', name:'Bell & Spigot ≠ One Material', aka:'A joint style, shared by several materials', icon:ICONS.warn,
+  std:'—',
+  rate:'—',
+  joint:'—',
+  look:'Ductile iron, PVC C900, and RCP all use gasketed bell & spigot joints — hearing the term narrows nothing on its own.',
+  use:'Pair joint type with weight, rigidity, and color/stamp before naming a material.',
+  tip:'Joint type is one clue among several — never the whole identification.',
+  q:'Which of these pipe materials use a gasketed bell & spigot joint?',
+  choices:['Ductile iron, PVC C900, and RCP all do','Only PVC does','Only ductile iron does','None of them — they all use fusion'],
+  correct:0,
+  explain:'Bell & spigot with a rubber gasket is a shared joint style across multiple materials — it tells you how the pipe connects, not what it’s made of.'}
+];
+
+/* ---------------- STATE ---------------- */
+var state = {
+  mode: 'study',
+  activeCats: {},           // catId -> true if filtered ON (empty = all)
+  studyOrder: [],
+  studyIdx: 0,
+  flipped: false,
+  quizPool: [],
+  quizIdx: 0,
+  quizAnswered: false,
+  sessionScore: {correct:0, total:0},
+  progress: { cards:{} }    // id -> {study:'unseen'|'learning'|'known', qAttempts, qCorrect}
+};
+
+function byId(id){ return document.getElementById(id); }
+function cardsFiltered(){
+  var keys = Object.keys(state.activeCats).filter(function(k){return state.activeCats[k];});
+  if(keys.length===0) return CARDS.slice();
+  return CARDS.filter(function(c){ return state.activeCats[c.cat]; });
+}
+function getProg(id){
+  if(!state.progress.cards[id]) state.progress.cards[id] = {study:'unseen', qAttempts:0, qCorrect:0};
+  return state.progress.cards[id];
+}
+
+/* ---------------- PERSISTENCE ---------------- */
+var db = null, dbDoc = null, saveTimer = null;
+function initPersistence(){
+  var note = byId('save-note');
+  if(window.claude && window.claude.use){
+    window.claude.use('db').then(function(handle){
+      if(!handle){ initLocalFallback(); return; }
+      db = handle;
+      dbDoc = db.doc('progress/main');
+      dbDoc.get().then(function(snap){
+        if(snap.exists && snap.data() && snap.data().cards){ state.progress = snap.data(); }
+        note.textContent = 'Progress saves automatically.';
+        renderAll();
+      }).catch(function(){ note.textContent = 'Progress saves automatically.'; renderAll(); });
+    }).catch(function(){ initLocalFallback(); });
+  } else {
+    initLocalFallback();
+  }
+}
+function initLocalFallback(){
+  try{
+    var raw = localStorage.getItem('pipe-primer-progress');
+    if(raw){ var parsed = JSON.parse(raw); if(parsed && parsed.cards) state.progress = parsed; }
+    byId('save-note').textContent = 'Progress saved in this browser.';
+  }catch(e){ byId('save-note').textContent = 'Progress won’t be saved between visits.'; }
+  renderAll();
+}
+function saveProgress(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    if(dbDoc){
+      dbDoc.set(state.progress).catch(function(){});
+    } else {
+      try{ localStorage.setItem('pipe-primer-progress', JSON.stringify(state.progress)); }catch(e){}
+    }
+  }, 500);
+}
+
+/* ---------------- RENDER: shell (filters, legend) ---------------- */
+function renderShell(){
+  var f = byId('filters');
+  f.innerHTML = '';
+  var allChip = document.createElement('button');
+  allChip.className='chip'; allChip.type='button'; allChip.setAttribute('aria-pressed', Object.keys(state.activeCats).filter(function(k){return state.activeCats[k];}).length===0);
+  allChip.innerHTML = '<span class="dot" style="background:var(--ink-soft)"></span>All';
+  allChip.addEventListener('click', function(){ state.activeCats = {}; afterFilterChange(); });
+  f.appendChild(allChip);
+  CATS.forEach(function(c){
+    var chip = document.createElement('button');
+    chip.className='chip'; chip.type='button';
+    chip.style.color = state.activeCats[c.id] ? c.color : '';
+    chip.setAttribute('aria-pressed', !!state.activeCats[c.id]);
+    chip.innerHTML = '<span class="dot" style="background:'+c.color+'"></span>'+c.label;
+    chip.addEventListener('click', function(){
+      state.activeCats[c.id] = !state.activeCats[c.id];
+      afterFilterChange();
+    });
+    f.appendChild(chip);
+  });
+
+  var legend = byId('legend');
+  legend.innerHTML = '';
+  CATS.forEach(function(c){
+    var span = document.createElement('span');
+    span.innerHTML = '<span class="dot" style="background:'+c.color+'"></span>'+c.label;
+    legend.appendChild(span);
+  });
+}
+function afterFilterChange(){
+  renderShell();
+  state.studyOrder = shuffled(cardsFiltered().map(function(c){return c.id;}));
+  state.studyIdx = 0; state.flipped = false;
+  buildQuizPool();
+  renderStudy();
+  renderQuiz();
+  renderProgressBar();
+}
+
+/* ---------------- PROGRESS BAR ---------------- */
+function renderProgressBar(){
+  var pool = cardsFiltered();
+  var known = pool.filter(function(c){ return getProg(c.id).study==='known'; }).length;
+  var pct = pool.length ? Math.round(100*known/pool.length) : 0;
+  byId('progress-fill').style.width = pct+'%';
+  byId('progress-label').textContent = pct+'% mastered ('+known+'/'+pool.length+')';
+  var allKnown = CARDS.filter(function(c){ return getProg(c.id).study==='known'; }).length;
+  byId('known-count').textContent = allKnown+'/'+CARDS.length;
+}
+
+/* ---------------- STUDY VIEW ---------------- */
+function shuffled(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function currentStudyCard(){
+  var pool = cardsFiltered();
+  if(pool.length===0) return null;
+  if(state.studyOrder.length===0 || state.studyIdx>=state.studyOrder.length){
+    state.studyOrder = shuffled(pool.map(function(c){return c.id;}));
+    state.studyIdx = 0;
+  }
+  var id = state.studyOrder[state.studyIdx];
+  var found = CARDS.filter(function(c){return c.id===id;})[0];
+  return found || pool[0];
+}
+function renderStudy(){
+  var card = currentStudyCard();
+  var cardEl = byId('card');
+  var idxEl = byId('card-idx');
+  var pool = cardsFiltered();
+  if(!card){
+    byId('face-front').innerHTML = '<div class="empty-state"><h3>No cards in this filter</h3><p>Choose a different category above.</p></div>';
+    byId('face-back').innerHTML = '';
+    idxEl.textContent = '0 / 0';
+    return;
+  }
+  cardEl.classList.toggle('flipped', state.flipped);
+  var cat = catOf(card.cat);
+  idxEl.textContent = (state.studyIdx+1)+' / '+pool.length;
+
+  byId('face-front').innerHTML =
+    '<div class="face-top"><span class="cat-tag" style="background:'+cat.soft+';color:'+cat.color+'">'+cat.label+'</span></div>'+
+    '<div class="card-icon-wrap">'+card.icon+'</div>'+
+    '<div class="name">'+card.name+'</div>'+
+    '<div class="aka">'+card.aka+'</div>'+
+    '<div class="tap-hint">Tap the card to flip &middot; see specs</div>';
+
+  var rows = '';
+  function row(k,v){ if(!v || v==='—') return ''; return '<div class="spec-row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>'; }
+  rows += row('Standard', card.std);
+  rows += row('Rating system', card.rate);
+  rows += row('Joint', card.joint);
+  rows += row('What it looks like', card.look);
+  rows += row('Where you’ll see it', card.use);
+
+  byId('face-back').innerHTML =
+    '<div class="face-top"><span class="cat-tag" style="background:'+cat.soft+';color:'+cat.color+'">'+card.name+'</span></div>'+
+    '<div class="spec-plate">'+rows+'<div class="tip-box">'+card.tip+'</div></div>';
+}
+function flipCard(){ state.flipped = !state.flipped; renderStudy(); }
+function stepCard(dir){
+  var pool = cardsFiltered();
+  if(pool.length===0) return;
+  state.studyIdx = (state.studyIdx + dir + state.studyOrder.length) % state.studyOrder.length;
+  state.flipped = false;
+  renderStudy();
+}
+function markCard(status){
+  var card = currentStudyCard();
+  if(!card) return;
+  getProg(card.id).study = status;
+  saveProgress();
+  renderProgressBar();
+  setTimeout(function(){ stepCard(1); }, 150);
+}
+
+/* ---------------- QUIZ VIEW ---------------- */
+function buildQuizPool(){
+  var pool = cardsFiltered().filter(function(c){ return c.q; });
+  // prioritize: unseen/learning cards first, then known
+  pool = pool.slice().sort(function(a,b){
+    var pa = getProg(a.id), pb = getProg(b.id);
+    var wa = pa.study==='known' ? 1 : 0;
+    var wb = pb.study==='known' ? 1 : 0;
+    return wa-wb;
+  });
+  state.quizPool = shuffled(pool.map(function(c){return c.id;}));
+  // keep some ordering bias by re-sorting shuffled by weight lightly (simple approach: leave shuffled for variety)
+  state.quizIdx = 0;
+  state.quizAnswered = false;
+}
+function currentQuizCard(){
+  if(state.quizPool.length===0) return null;
+  if(state.quizIdx >= state.quizPool.length){ buildQuizPool(); }
+  var id = state.quizPool[state.quizIdx];
+  return CARDS.filter(function(c){return c.id===id;})[0];
+}
+function renderQuiz(){
+  var host = byId('quiz-view');
+  var card = currentQuizCard();
+  if(!card){
+    host.innerHTML = '<div class="empty-state plate"><h3>No quiz questions in this filter</h3><p>Choose a different category above.</p></div>';
+    return;
+  }
+  var cat = catOf(card.cat);
+  var letters = ['A','B','C','D'];
+  // build shuffled choice order once per question, stored on dataset via closure
+  if(!card._choiceOrder || card._choiceOrderFor !== state.quizIdx){
+    var order = [0,1,2,3];
+    order = shuffled(order);
+    card._choiceOrder = order;
+    card._choiceOrderFor = state.quizIdx;
+  }
+  var order = card._choiceOrder;
+  var choicesHtml = order.map(function(origIdx, pos){
+    return '<button class="choice" data-orig="'+origIdx+'" data-pos="'+pos+'"><span class="letter">'+letters[pos]+'</span><span>'+card.choices[origIdx]+'</span></button>';
+  }).join('');
+
+  host.innerHTML =
+    '<div class="quiz-card plate">'+
+      '<span class="quiz-cat" style="background:'+cat.soft+';color:'+cat.color+'">'+cat.label+'</span>'+
+      '<div class="quiz-q">'+card.q+'</div>'+
+      '<div class="choices" id="choices-host">'+choicesHtml+'</div>'+
+      '<div class="explain" id="explain-box">'+card.explain+'</div>'+
+      '<div class="quiz-footer">'+
+        '<span class="score-mini">Session: '+state.sessionScore.correct+' / '+state.sessionScore.total+' correct</span>'+
+        '<button class="btn primary" id="next-quiz-btn" '+(state.quizAnswered?'':'disabled')+'>Next question &rarr;</button>'+
+      '</div>'+
+    '</div>';
+
+  var btns = host.querySelectorAll('.choice');
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(state.quizAnswered) return;
+      answerQuiz(card, parseInt(btn.getAttribute('data-orig'),10));
+    });
+  });
+  var nextBtn = byId('next-quiz-btn');
+  if(nextBtn) nextBtn.addEventListener('click', function(){
+    state.quizIdx++;
+    state.quizAnswered = false;
+    renderQuiz();
+  });
+}
+function answerQuiz(card, chosenIdx){
+  state.quizAnswered = true;
+  var prog = getProg(card.id);
+  prog.qAttempts = (prog.qAttempts||0)+1;
+  var isCorrect = chosenIdx === card.correct;
+  if(isCorrect){ prog.qCorrect = (prog.qCorrect||0)+1; state.sessionScore.correct++; }
+  state.sessionScore.total++;
+  saveProgress();
+
+  var btns = document.querySelectorAll('#choices-host .choice');
+  btns.forEach(function(btn){
+    var orig = parseInt(btn.getAttribute('data-orig'),10);
+    btn.setAttribute('disabled','');
+    if(orig === card.correct) btn.classList.add('correct');
+    else if(orig === chosenIdx) btn.classList.add('wrong');
+  });
+  byId('explain-box').classList.add('show');
+  var nextBtn = byId('next-quiz-btn');
+  if(nextBtn) nextBtn.removeAttribute('disabled');
+  var footer = document.querySelector('.score-mini');
+  if(footer) footer.textContent = 'Session: '+state.sessionScore.correct+' / '+state.sessionScore.total+' correct';
+}
+
+/* ---------------- MODE SWITCH ---------------- */
+function setMode(mode){
+  state.mode = mode;
+  byId('tab-study').setAttribute('aria-selected', mode==='study');
+  byId('tab-quiz').setAttribute('aria-selected', mode==='quiz');
+  byId('study-view').hidden = mode!=='study';
+  byId('quiz-view').hidden = mode!=='quiz';
+}
+
+/* ---------------- WIRE UP ---------------- */
+function renderAll(){
+  renderShell();
+  state.studyOrder = shuffled(cardsFiltered().map(function(c){return c.id;}));
+  buildQuizPool();
+  renderStudy();
+  renderQuiz();
+  renderProgressBar();
+}
+
+byId('card').addEventListener('click', flipCard);
+byId('card').addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); flipCard(); } });
+byId('prev-btn').addEventListener('click', function(){ stepCard(-1); });
+byId('next-btn').addEventListener('click', function(){ stepCard(1); });
+byId('mark-learning').addEventListener('click', function(){ markCard('learning'); });
+byId('mark-known').addEventListener('click', function(){ markCard('known'); });
+byId('shuffle-btn').addEventListener('click', function(){
+  state.studyOrder = shuffled(cardsFiltered().map(function(c){return c.id;}));
+  state.studyIdx = 0; state.flipped = false; renderStudy();
+});
+byId('tab-study').addEventListener('click', function(){ setMode('study'); });
+byId('tab-quiz').addEventListener('click', function(){ setMode('quiz'); });
+
+initPersistence();
+})();
+</script>
+</body>
+</html>
